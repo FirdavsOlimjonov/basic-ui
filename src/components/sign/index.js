@@ -18,7 +18,7 @@ const SignComponent = () => {
     };
     const signIn = () => {
         axios
-            .post('http://localhost/api/auth/v1/auth/sign-in', obj)
+            .post('http://localhost8090/api/auth/v1/auth/sign-in', obj)
             .then(res => {
                     let data = res.data.data;
                     localStorage.setItem(
@@ -34,7 +34,7 @@ const SignComponent = () => {
     return (
         <Row>
             <Col md={8}>
-                <img src="../../assets/images/SignIn.png" alt=""/>
+                <img src="src/assets/images/osh.jpg" alt=""/>
             </Col>
             <Col md={4}>
                 <h4>Please login</h4>
