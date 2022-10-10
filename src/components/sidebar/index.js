@@ -12,7 +12,7 @@ const Sidebar = ({children}) => {
         navigate('/')
     }
     return (
-        <Row>
+        <Row style={{"marginTop":"20px"}}>
             <Col md={3}>
                 <nav>
                     <ul>
@@ -32,8 +32,8 @@ const Sidebar = ({children}) => {
                         </li>
                     </ul>
                 </nav>
-
             </Col>
+
             <Col md={9}>
                 {children}
             </Col>

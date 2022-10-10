@@ -5,7 +5,9 @@ import Layout from "../../components/layout";
 const CategoryPage = () => {
     return(
         <Layout>
-            <CategoryComponent/>
+            <CategoryComponent
+            // categories={[]}
+            />
         </Layout>
     )
 }

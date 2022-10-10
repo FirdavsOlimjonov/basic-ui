@@ -1,7 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import Style from "./index.css";
-import image from "../../assets/images/osh.jpg"
+// import Style from "./index.css";
+// import image from "../../assets/images/SignIn.png"
 
 const Home = () => {
     return (

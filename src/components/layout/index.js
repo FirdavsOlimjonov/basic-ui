@@ -12,7 +12,8 @@ const Layout=({children})=>{
             replace/>;
     } else {
         return (
-            <Sidebar children={children}/>
+            <Sidebar
+                children={children}/>
         );
     }
 }

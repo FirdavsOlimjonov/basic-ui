@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import {Col, Row} from "reactstrap";
 import axios from "axios";
-import {ACCESS_TOKEN,REFRESH_TOKEN} from "../../utils/RestContants";
+import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../utils/RestContants";
 import {useNavigate} from "react-router-dom";
+import {SIGN_IN_PATH} from "../../utils/api";
 
 const SignComponent = () => {
     const [phoneNumber, setPhoneNumber] = useState('+998');
@@ -13,12 +14,12 @@ const SignComponent = () => {
     const navigate = useNavigate();
 
 
-    let obj = {
-        password, phoneNumber
-    };
     const signIn = () => {
         axios
-            .post('http://localhost8090/api/auth/v1/auth/sign-in', obj)
+            .post(
+                SIGN_IN_PATH,
+                {password, phoneNumber}
+            )
             .then(res => {
                     let data = res.data.data;
                     localStorage.setItem(
@@ -34,7 +35,7 @@ const SignComponent = () => {
     return (
         <Row>
             <Col md={8}>
-                <img src="src/assets/images/osh.jpg" alt=""/>
+                <img src="src/assets/images/SignIn.png" alt=""/>
             </Col>
             <Col md={4}>
                 <h4>Please login</h4>

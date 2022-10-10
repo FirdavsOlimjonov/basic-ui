@@ -5,6 +5,8 @@ import Home from "./pages/home";
 import OrderPage from "./pages/order/OrderPage";
 import CategoryPage from "./pages/category";
 import ProductPage from "./pages/product";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const App = () => {
@@ -28,14 +30,16 @@ const App = () => {
         {
             path: "/product",
             element: <ProductPage/>
-        },
+        }
     ]);
 
     return (
-
+        <>
             <RouterProvider
                 router={router}
             />
+            <ToastContainer/>
+        </>
     );
 }
 
