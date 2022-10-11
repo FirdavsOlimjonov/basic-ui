@@ -3,7 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {Col, Row} from "reactstrap";
 import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../utils/RestContants";
 
-const Sidebar = ({children}) => {
+const Sidebar = ({children, currentUser}) => {
     let navigate = useNavigate();
 
     const logout = () => {
@@ -12,24 +12,18 @@ const Sidebar = ({children}) => {
         navigate('/')
     }
     return (
-        <Row style={{"marginTop":"20px"}}>
+        <Row style={{"marginTop": "20px"}}>
             <Col md={3}>
                 <nav>
                     <ul>
-                        <li>
-                            <Link to="/order">Buyurtmalar</Link>
-                        </li>
-                        <li>
-                            <Link to="/product">Maxsulotlar</Link>
-                        </li>
-                        <li>
-                            <Link to="/category">Category</Link>
-                        </li>
-                        <li>
-                            <Link
-                                onClick={logout}
-                            >Logout</Link>
-                        </li>
+                        {currentUser?.pages?.map(page =>
+                            <li>
+                                <Link to={`/${page.toLowerCase()}`}>{page}</Link>
+                            </li>
+                        )}
+                        <Link
+                            onClick={logout}
+                        >Logout</Link>
                     </ul>
                 </nav>
             </Col>

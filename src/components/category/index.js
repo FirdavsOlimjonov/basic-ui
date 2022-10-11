@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
     Button,
     Col,
@@ -17,13 +17,16 @@ import axios from "axios";
 import {ADD_CATEGORY_PATH, CATEGORIES_PATH, DELETE_CATEGORY_PATH, EDIT_CATEGORY_PATH} from "../../utils/api";
 import {ACCESS_TOKEN} from "../../utils/RestContants";
 import {toast} from "react-toastify";
+import Sidebar from "../sidebar";
+import CurrentUserContext from "../../utils/CurrentUserContext";
 
 const CategoryComponent = () => {
     const [categories, setCategories] = useState([]);
     const [open, setOpen] = useState(false);
     const [category, setCategory] = useState({});
 
-    console.log('categoryState', category)
+
+    const currentUser = useContext(CurrentUserContext).currentUser;
 
     const getCategories = () => {
         axios.post(
@@ -43,7 +46,6 @@ const CategoryComponent = () => {
         []);
 
     const openAddModal = (e) => {
-        console.log(e);
         setCategory(e ? e : {});
 
         setOpen(!open)
@@ -91,15 +93,20 @@ const CategoryComponent = () => {
             })
         }
     }
+
+    const hasPermission = (permission) => {
+        return currentUser?.permissions?.includes(permission);
+    }
     return (
         <>
             <Row>
                 <Col md={2}>
-                    <Button
-                        color={"success"}
-                        onClick={() => openAddModal('')}>
-                        + ADD
-                    </Button>
+                    {hasPermission("ADD_CATEGORY") &&
+                        <Button
+                            color={"success"}
+                            onClick={() => openAddModal('')}>
+                            + ADD
+                        </Button>}
                 </Col>
                 <Col md={9}>
                     <Row>
@@ -129,12 +136,14 @@ const CategoryComponent = () => {
                                 <td>{category.nameUz}</td>
                                 <td>{category.nameRu}</td>
                                 <td>{category.parent?.nameUz}</td>
-                                <td><Button
+                                <td>{currentUser?.permission?.canEditCategory && <Button
                                     onClick={() => openAddModal(category)}
-                                    color={"warning"}>Edit</Button></td>
-                                <td><Button
-                                    onClick={()=>deleteCategory(category)}
-                                    color={"danger"}>Delete</Button></td>
+                                    color={"warning"}>Edit</Button>}</td>
+                                <td>{
+                                    hasPermission('DELETE_CATEGORY') &&
+                                    <Button
+                                        onClick={() => deleteCategory(category)}
+                                        color={"danger"}>Delete</Button>}</td>
                             </tr>
                         })}
                         </tbody>
