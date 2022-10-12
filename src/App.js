@@ -7,6 +7,7 @@ import CategoryPage from "./pages/category";
 import ProductPage from "./pages/product";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Chat from "./pages/chat";
 
 
 const App = () => {
@@ -30,6 +31,9 @@ const App = () => {
         {
             path: "/product",
             element: <ProductPage/>
+        },{
+            path: "/chat",
+            element: <Chat/>
         }
     ]);
 
