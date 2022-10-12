@@ -108,6 +108,13 @@
 .chat .middle .card {
     /*width: 200px;*/
 }
+
+.chat .middle .send_date {
+    margin-left: 55%;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.47);
+}
+
 .chat .message {
     width: 100%;
     /*border: 1px solid #000;*/
@@ -127,8 +134,8 @@
 .chat .message .send {
     width: 120px;
     height: 60px;
-    margin-top: 0px;
-    margin-left: 91%;
+    margin-top: -60px;
+    margin-left: 90%;
     border-radius: 0;
     display: flex;
     justify-content: center;

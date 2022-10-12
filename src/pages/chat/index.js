@@ -21,28 +21,40 @@ import {toast} from "react-toastify";
 import style from "./style.css"
 
 const Chat = () => {
+
     const [chats, setChats] = useState([]);
+
     const [messages, setMessages] = useState([]);
+
     const [selectedChat, setSelectedChat] = useState();
+
     const [open, setOpen] = useState(false);
 
     const addUser = (e) => {
+
         e.preventDefault();
-        axios.post(
+        axios.get(
             // WEBSOCKET_ADD_USER_PATH,
-            "http://10.10.1.107:8090/user/sign/",
-            {headers:
+            "http://localhost:8090/api/telegram/login",
+            {
+                headers:
                     {
-                    "Content-Type": "application/json",
-                    username: "e.target.username.value"
-            }}
+                        username: e.target.username.value
+                    }
+            }
         ).then(res => {
-            localStorage.setItem(USERNAME, res.data.username.valueOf());
+            localStorage.setItem(USERNAME, res.data.data.username);
             toggleModal();
         }).catch(err => {
-            toast.error(err+"!")
+            toast.error(err + "!")
         })
     }
+
+    let setSelectedChatAndGEtMessage = (e) => {
+        console.log(e)
+        setSelectedChat(e);
+        getMessage(e)
+    };
 
     const toggleModal = () => {
         setOpen(!open)
@@ -50,13 +62,43 @@ const Chat = () => {
 
     const getChats = () => {
         axios.get(
-            WEBSOCKET_GET_CHATS_PATH,
+            "http://localhost:8090/api/telegram/get-chats",
             {headers: {username: localStorage.getItem(USERNAME)}}
         ).then(res => {
-            console.log(res);
-            setChats(res.data)
+            setChats(res.data.data)
         })
     }
+
+    const getMessage = (e) => {
+        axios.post(
+            "http://localhost:8090/api/telegram/get-message",
+            {
+                chatid: selectedChat?.id,
+                fromId: e.from.id,
+                toId: e.to.id
+            }
+        ).then(res => {
+            setMessages(res.data.data)
+        })
+    }
+
+
+    const sendMessage = (e) => {
+
+        e.preventDefault();
+
+
+        axios.post(
+            "http://localhost:8090/api/telegram/send-message",
+            {
+                message: e.target.message.value,
+                chatId: selectedChat?.id
+            }
+        ).then(res => {
+            console.log(res)
+            setMessages([...messages, res.data.data])
+        })
+    };
 
     useEffect(() => {
         if (!localStorage.getItem("username"))
@@ -99,24 +141,29 @@ const Chat = () => {
                 <Col md={3} className={"chats"}>
                     <Input placeholder={"Search chat"} className={"search"}/>
                     {chats.map(item =>
-                        <Card className={"card"}>
-                            <CardBody>
-                                <CardTitle className={"title"}>
-                                    <h3 className={"h3"}>{item.name}</h3>
-                                    <Badge className={"badge"}>
-                                        {item.unread}
-                                    </Badge>
-                                </CardTitle>
-                            </CardBody>
-                        </Card>
+                        item.to.username === localStorage.getItem(USERNAME)
+                            ? ''
+                            :
+                            <Card className={"card"}>
+                                <CardBody onClick={
+                                    () => setSelectedChatAndGEtMessage(item)}
+                                >
+                                    <CardTitle className={"title"}>
+                                        <h3 className={"h3"}>{item.to.username}</h3>
+                                        <Badge className={"badge"}>
+                                            {item.unread}
+                                        </Badge>
+                                    </CardTitle>
+                                </CardBody>
+                            </Card>
                     )}
                 </Col>
                 <Col md={9} className={"chat"}>
-                     <Row className={"top"}>
+                    <Row className={"top"}>
                         <Card className={"card"}>
                             <CardBody className={"card_body"}>
                                 <CardTitle>
-                                    <h3>{selectedChat?.name}</h3>
+                                    <h3>{selectedChat?.to?.username}</h3>
                                 </CardTitle>
                             </CardBody>
                         </Card>
@@ -124,26 +171,44 @@ const Chat = () => {
                     <Row className={"middle"}>
                         <Card style={{borderRadius: "0px"}}>
                             <CardBody>
-                                {messages.map(item =>
-                                    <Card style={
-                                        {
-                                            width: '250px',
-                                            marginTop: '5px'
-                                        }
-                                    }>
-                                        <CardBody>
-                                            {item.text}
-                                        </CardBody>
-                                    </Card>)}
+                                {
+                                    console.log(messages)
+                                }
+                                {
+                                    messages?.map(item =>
+                                        <Card style={
+                                            {
+                                                width: '250px',
+                                                marginTop: '5px'
+                                            }
+                                        }>
+                                            <CardBody>
+                                                {item.message}
+                                            </CardBody>
+                                            <div className={"send_date"}>
+                                                {
+                                                    new Date(item.messageDate).getFullYear()+"."+
+                                                    new Date(item.messageDate).getMonth()+"."+
+                                                    new Date(item.messageDate).getDate()+"."+
+                                                    new Date(item.messageDate).getHours()+"."+
+                                                    new Date(item.messageDate).getMinutes()
+                                                }
+                                            </div>
+                                        </Card>)
+                                }
                             </CardBody>
                         </Card>
                     </Row>
                     <Row>
                         <div className="message">
-                            <Input
-                                type={"textarea"}
-                                className={"send_message"}/>
-                            <Badge className={"send"}>Send</Badge>
+                            <Form onSubmit={sendMessage} style={{width: "100%"}}>
+                                <Input
+                                    type={"textarea"}
+                                    className={"send_message"}
+                                    name={"message"}
+                                />
+                                <Button className={"send"} type={"submit"}>Send</Button>
+                            </Form>
                         </div>
                     </Row>
                 </Col>
