@@ -23,23 +23,24 @@ import style from "./style.css"
 const Chat = () => {
     const [chats, setChats] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [selectedChat, setSelectedChat] = useState({
-        id: 1,
-        name: "No Name",
-        unread: 2
-    });
+    const [selectedChat, setSelectedChat] = useState();
     const [open, setOpen] = useState(false);
 
     const addUser = (e) => {
         e.preventDefault();
         axios.post(
-            WEBSOCKET_ADD_USER_PATH,
-            {username: e.target.username.value}
+            // WEBSOCKET_ADD_USER_PATH,
+            "http://10.10.1.107:8090/user/sign/",
+            {headers:
+                    {
+                    "Content-Type": "application/json",
+                    username: "e.target.username.value"
+            }}
         ).then(res => {
-            localStorage.setItem(USERNAME, res.data.username);
+            localStorage.setItem(USERNAME, res.data.username.valueOf());
             toggleModal();
         }).catch(err => {
-            toast.error("Bunday user mavjud")
+            toast.error(err+"!")
         })
     }
 
@@ -111,15 +112,15 @@ const Chat = () => {
                     )}
                 </Col>
                 <Col md={9} className={"chat"}>
-                    {selectedChat.id && <Row className={"top"}>
+                     <Row className={"top"}>
                         <Card className={"card"}>
                             <CardBody className={"card_body"}>
                                 <CardTitle>
-                                    <h3>{selectedChat.name}</h3>
+                                    <h3>{selectedChat?.name}</h3>
                                 </CardTitle>
                             </CardBody>
                         </Card>
-                    </Row>}
+                    </Row>
                     <Row className={"middle"}>
                         <Card style={{borderRadius: "0px"}}>
                             <CardBody>
