@@ -9,3 +9,8 @@
     width: 100%;
     height: 100%;
 }
+.chats {
+    border: 1px solid #000;
+    height: 100vh;
+    overflow: scroll;
+}

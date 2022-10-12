@@ -26,7 +26,40 @@ const Chat = () => {
             id:1,
             name: "No Name",
             unread: 2
-        }
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },{
+            id:1,
+            name: "No Name",
+            unread: 2
+        },
+
     ]);
     const [messages, setMessages] = useState([
         {
@@ -134,7 +167,7 @@ const Chat = () => {
                         </Card>
                     )}
                 </Col>
-                <Col md={9}>
+                <Col md={9} className={"chat"}>
                     {selectedChat.id && <Row>
                         <Card>
                             <CardBody>
