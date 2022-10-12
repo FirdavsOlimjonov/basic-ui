@@ -7,7 +7,6 @@ import sidebarStyle from "./style.css";
 const Sidebar = ({children, currentUser}) => {
     let navigate = useNavigate();
 
-    const style = {sidebarStyle}
 
     const logout = () => {
         localStorage.removeItem(ACCESS_TOKEN)
@@ -15,7 +14,7 @@ const Sidebar = ({children, currentUser}) => {
         navigate('/')
     }
     return (
-        <Row style={{"marginTop": "20px"}}>
+        <Row className={"row"} style={{"marginTop": "20px"}}>
             <Col md={3}>
                 <nav>
                     <div className={"profile"}>
@@ -25,7 +24,8 @@ const Sidebar = ({children, currentUser}) => {
                     <ul>
                         {currentUser?.pages?.map(page =>
                             <li>
-                                <Link to={`/${page.toLowerCase()}`}>{page}</Link>
+                                <span></span>
+                                <Link to={`/${page.toLowerCase()}`} className="link">{page}</Link>
                             </li>
                         )}
                         <Link

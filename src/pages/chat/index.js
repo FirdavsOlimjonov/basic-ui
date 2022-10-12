@@ -18,9 +18,16 @@ import axios from "axios";
 import {WEBSOCKET_ADD_USER_PATH, WEBSOCKET_GET_CHATS_PATH} from "../../utils/api";
 import {USERNAME} from "../../utils/RestContants";
 import {toast} from "react-toastify";
+import style from "./style.css"
 
 const Chat = () => {
-    const [chats, setChats] = useState([]);
+    const [chats, setChats] = useState([
+        {
+            id:1,
+            name: "No Name",
+            unread: 2
+        }
+    ]);
     const [messages, setMessages] = useState([
         {
             id: '100',
@@ -108,19 +115,16 @@ const Chat = () => {
             </>
 
             :
-            <Row style={{margin: '50px'}}>
-                <Col md={3}>
-                    <Input
-                        style={{height: '75px'}}
-                        placeholder={"Search chat"}/>
+            <Row className={"root"}>
+                <Col md={3} className={"chats"}>
+                    <Input placeholder={"Search chat"}/>
                     {chats.map(item =>
                         <Card>
                             <CardBody
-                                onClick={() => setSelectedChat(item)}
                                 style={{cursor: 'pointer'}}>
                                 <CardTitle>
                                     <h3>{item.name}
-                                        <Badge style={{marginLeft: '200px'}} color="secondary">
+                                        <Badge>
                                             {item.unread}
                                         </Badge>
                                     </h3>
@@ -133,7 +137,7 @@ const Chat = () => {
                 <Col md={9}>
                     {selectedChat.id && <Row>
                         <Card>
-                            <CardBody style={{cursor: 'pointer'}}>
+                            <CardBody>
                                 <CardTitle>
                                     <h3>{selectedChat.name}</h3>
                                 </CardTitle>
@@ -144,10 +148,7 @@ const Chat = () => {
                         <Card>
                             <CardBody>
                                 {messages.map(item =>
-                                    <Card style={{
-                                        marginTop: '10px',
-                                        width: '50%'
-                                    }}>
+                                    <Card>
                                         <CardBody>
                                             {item.text}
                                         </CardBody>
@@ -155,13 +156,12 @@ const Chat = () => {
                             </CardBody>
                         </Card>
                     </Row>
-                    <Row style={{position: 'relative'}}>
-                        <div
-                            style={{display: 'flex', position: 'absolute'}}>
+                    <Row>
+                        <div>
                             <Input
                                 type={"textarea"}
-                                style={{width: '80%'}} placeholder={"Enter message text"}/>
-                            <Badge style={{cursor: 'pointer', width: '10%'}} color="secondary">Send</Badge>
+                                className={"send_message"}/>
+                            <Badge>Send</Badge>
                         </div>
                     </Row>
                 </Col>
