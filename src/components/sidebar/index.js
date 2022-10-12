@@ -4,7 +4,7 @@ import {Col, Row} from "reactstrap";
 import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../utils/RestContants";
 import sidebarStyle from "./style.css";
 
-const Sidebar = ({children}) => {
+const Sidebar = ({children, currentUser}) => {
     let navigate = useNavigate();
 
     const style = {sidebarStyle}
@@ -15,39 +15,22 @@ const Sidebar = ({children}) => {
         navigate('/')
     }
     return (
-        <Row className={"row"}>
-            <Col md={3} className={"column"}>
+        <Row style={{"marginTop": "20px"}}>
+            <Col md={3}>
                 <nav>
                     <div className={"profile"}>
                         <div className={"img"}></div>
                         <div className={"name"}>Yusufbek</div>
                     </div>
                     <ul>
-                        <li>
-                            <span></span>
-                            <Link className={"link"} to="/order" >Buyurtmalar</Link>
-                        </li>
-                        <li>
-                            <span></span>
-                            <Link className={"link"} to="/product">Maxsulotlar</Link>
-                        </li>
-                        <li>
-                            <span></span>
-                            <Link className={"link"} to="/category">Category</Link>
-                        </li>
-                        <li>
-                            <span></span>
-                            <Link className={"link"} to="/promotion">Promotion</Link>
-                        </li>
-                        <li>
-                            <span></span>
-                            <Link className={"link"} to="/discount">Discount</Link>
-                        </li>
-                        <li>
-                            <Link
-                                onClick={logout}
-                            >Logout</Link>
-                        </li>
+                        {currentUser?.pages?.map(page =>
+                            <li>
+                                <Link to={`/${page.toLowerCase()}`}>{page}</Link>
+                            </li>
+                        )}
+                        <Link
+                            onClick={logout}
+                        >Logout</Link>
                     </ul>
                 </nav>
             </Col>

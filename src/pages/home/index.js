@@ -16,6 +16,9 @@ const Home = () => {
                     <li>
                         <Link to="/order">Order</Link>
                     </li>
+                    <li>
+                        <Link to="/chat">Chat</Link>
+                    </li>
                 </ul>
             </nav>
     );

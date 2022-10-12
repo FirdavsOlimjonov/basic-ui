@@ -3,10 +3,9 @@ import CategoryComponent from "../../components/category";
 import Layout from "../../components/layout";
 
 const CategoryPage = () => {
-    return(
+    return (
         <Layout>
             <CategoryComponent
-            // categories={[]}
             />
         </Layout>
     )
