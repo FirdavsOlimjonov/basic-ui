@@ -21,66 +21,13 @@ import {toast} from "react-toastify";
 import style from "./style.css"
 
 const Chat = () => {
-    const [chats, setChats] = useState([
-        {
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },{
-            id:1,
-            name: "No Name",
-            unread: 2
-        },
-
-    ]);
-    const [messages, setMessages] = useState([
-        {
-            id: '100',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '101',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '102',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '103',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }
-    ]);
-    const [selectedChat, setSelectedChat] = useState({});
+    const [chats, setChats] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [selectedChat, setSelectedChat] = useState({
+        id: 1,
+        name: "No Name",
+        unread: 2
+    });
     const [open, setOpen] = useState(false);
 
     const addUser = (e) => {
@@ -146,42 +93,43 @@ const Chat = () => {
                     </Form>
                 </Modal>
             </>
-
             :
             <Row className={"root"}>
                 <Col md={3} className={"chats"}>
-                    <Input placeholder={"Search chat"}/>
+                    <Input placeholder={"Search chat"} className={"search"}/>
                     {chats.map(item =>
-                        <Card>
-                            <CardBody
-                                style={{cursor: 'pointer'}}>
-                                <CardTitle>
-                                    <h3>{item.name}
-                                        <Badge>
-                                            {item.unread}
-                                        </Badge>
-                                    </h3>
+                        <Card className={"card"}>
+                            <CardBody>
+                                <CardTitle className={"title"}>
+                                    <h3 className={"h3"}>{item.name}</h3>
+                                    <Badge className={"badge"}>
+                                        {item.unread}
+                                    </Badge>
                                 </CardTitle>
-
                             </CardBody>
                         </Card>
                     )}
                 </Col>
                 <Col md={9} className={"chat"}>
-                    {selectedChat.id && <Row>
-                        <Card>
-                            <CardBody>
+                    {selectedChat.id && <Row className={"top"}>
+                        <Card className={"card"}>
+                            <CardBody className={"card_body"}>
                                 <CardTitle>
                                     <h3>{selectedChat.name}</h3>
                                 </CardTitle>
                             </CardBody>
                         </Card>
                     </Row>}
-                    <Row>
-                        <Card>
+                    <Row className={"middle"}>
+                        <Card style={{borderRadius: "0px"}}>
                             <CardBody>
                                 {messages.map(item =>
-                                    <Card>
+                                    <Card style={
+                                        {
+                                            width: '250px',
+                                            marginTop: '5px'
+                                        }
+                                    }>
                                         <CardBody>
                                             {item.text}
                                         </CardBody>
@@ -190,17 +138,17 @@ const Chat = () => {
                         </Card>
                     </Row>
                     <Row>
-                        <div>
+                        <div className="message">
                             <Input
                                 type={"textarea"}
                                 className={"send_message"}/>
-                            <Badge>Send</Badge>
+                            <Badge className={"send"}>Send</Badge>
                         </div>
                     </Row>
                 </Col>
             </Row>
         }
-    </>)
+    </>);
 }
 
 export default Chat;
