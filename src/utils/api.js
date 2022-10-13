@@ -10,3 +10,5 @@ export const REFRESH_TOKEN_PATH = BASE_PATH + 'api/auth/v1/auth/refresh-token';
 
 export const WEBSOCKET_ADD_USER_PATH = BASE_PATH + 'user/sign';
 export const WEBSOCKET_GET_CHATS_PATH = BASE_PATH + 'chat/getChats';
+export const WEBSOCKET_GET_MESSAGES_PATH = BASE_PATH + 'message/messageList';
+export const WEBSOCKET_ADD_MESSAGE_PATH = BASE_PATH + 'message/new-message';

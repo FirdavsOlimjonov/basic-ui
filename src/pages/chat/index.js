@@ -4,44 +4,32 @@ import {
     Button,
     Card,
     CardBody,
-    CardSubtitle,
     CardTitle,
     Col, Form, FormGroup,
     Input, Label,
     Modal, ModalBody, ModalFooter,
     ModalHeader,
-    Navbar,
     Row
 } from "reactstrap";
 import {Link} from "react-router-dom";
 import axios from "axios";
-import {WEBSOCKET_ADD_USER_PATH, WEBSOCKET_GET_CHATS_PATH} from "../../utils/api";
+import {WEBSOCKET_ADD_USER_PATH, WEBSOCKET_GET_CHATS_PATH, WEBSOCKET_GET_MESSAGES_PATH} from "../../utils/api";
 import {USERNAME} from "../../utils/RestContants";
 import {toast} from "react-toastify";
 
 const Chat = () => {
-    const [chats, setChats] = useState([]);
-    const [messages, setMessages] = useState([
+    const [chats, setChats] = useState([
         {
-            id: '100',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '101',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '102',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '103',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
+            id: '10',
+            username: 'aaa',
+            unread: 33
         }
     ]);
+    const [messages, setMessages] = useState([]);
     const [selectedChat, setSelectedChat] = useState({});
     const [open, setOpen] = useState(false);
+    const [newmessage, setNewMessage] = useState([]);
+    const setText = (e) => setNewMessage(e.target.value);
 
     const addUser = (e) => {
         e.preventDefault();
@@ -49,34 +37,70 @@ const Chat = () => {
             WEBSOCKET_ADD_USER_PATH,
             {username: e.target.username.value}
         ).then(res => {
-            localStorage.setItem(USERNAME, res.data.username);
+            localStorage.setItem(USERNAME, res.data.data.username);
             toggleModal();
         }).catch(err => {
             toast.error("Bunday user mavjud")
         })
     }
 
+    const addMessage = () => {
+        axios.post(
+            WEBSOCKET_ADD_MESSAGE_PATH,
+            
+        )
+    }
+
+    const selectChat = (item) => {
+        setSelectedChat(item);
+
+        getMessages(item);
+    }
+
     const toggleModal = () => {
         setOpen(!open)
     }
 
+    const headers = {
+        'Content-Type': 'application/json',
+        username: localStorage.getItem(USERNAME),
+    };
+
     const getChats = () => {
+        console.log(headers.username);
         axios.get(
             WEBSOCKET_GET_CHATS_PATH,
-            {headers: {username: localStorage.getItem(USERNAME)}}
+            {headers}
         ).then(res => {
             console.log(res);
-            setChats(res.data)
+            setChats(res.data.data)
         })
     }
+    
+    let chatId = selectedChat.id;
+
+    const getMessages = (item) => {
+        axios.get(
+            WEBSOCKET_GET_MESSAGES_PATH + '/' + chatId,
+            {headers}
+        ).then( res => {
+            console.log(res);
+            setMessages(res.data.data)
+        })
+    }
+    
+    
 
     useEffect(() => {
-        if (!localStorage.getItem("username"))
+        if (!localStorage.getItem(USERNAME))
             setOpen(true)
         else {
             getChats()
         }
     }, [])
+
+
+
     return (<>
         {!localStorage.getItem("username") ?
             <>
@@ -116,10 +140,10 @@ const Chat = () => {
                     {chats.map(item =>
                         <Card>
                             <CardBody
-                                onClick={() => setSelectedChat(item)}
+                                onClick={() => selectChat(item)}
                                 style={{cursor: 'pointer'}}>
                                 <CardTitle>
-                                    <h3>{item.name}
+                                    <h3>{item.username}
                                         <Badge style={{marginLeft: '200px'}} color="secondary">
                                             {item.unread}
                                         </Badge>
@@ -149,7 +173,7 @@ const Chat = () => {
                                         width: '50%'
                                     }}>
                                         <CardBody>
-                                            {item.text}
+                                            {item.content}
                                         </CardBody>
                                     </Card>)}
                             </CardBody>
@@ -159,9 +183,12 @@ const Chat = () => {
                         <div
                             style={{display: 'flex', position: 'absolute'}}>
                             <Input
+                                id = "message"
+                                name = "message"
+                                onChange={setText()}
                                 type={"textarea"}
                                 style={{width: '80%'}} placeholder={"Enter message text"}/>
-                            <Badge style={{cursor: 'pointer', width: '10%'}} color="secondary">Send</Badge>
+                            <Badge onClick={addMessage()} style={{cursor: 'pointer', width: '10%'}} color="secondary">Send</Badge>
                         </div>
                     </Row>
                 </Col>
