@@ -4,56 +4,63 @@ import {
     Button,
     Card,
     CardBody,
-    CardSubtitle,
     CardTitle,
-    Col, Form, FormGroup,
-    Input, Label,
-    Modal, ModalBody, ModalFooter,
+    Col,
+    Form,
+    FormGroup,
+    Input,
+    Label,
+    Modal,
+    ModalBody,
+    ModalFooter,
     ModalHeader,
-    Navbar,
     Row
 } from "reactstrap";
 import {Link} from "react-router-dom";
 import axios from "axios";
-import {WEBSOCKET_ADD_USER_PATH, WEBSOCKET_GET_CHATS_PATH} from "../../utils/api";
+import {
+    WEBSOCKET_ADD_USER_PATH,
+    WEBSOCKET_GET_CHATS_PATH,
+    WEBSOCKET_GET_MESSAGES_PATH,
+    WEBSOCKET_SEARCH_USERS_PATH,
+    WEBSOCKET_SEND_MESSAGE_PATH
+} from "../../utils/api";
 import {USERNAME} from "../../utils/RestContants";
 import {toast} from "react-toastify";
 
 const Chat = () => {
     const [chats, setChats] = useState([]);
-    const [messages, setMessages] = useState([
-        {
-            id: '100',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '101',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '102',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '103',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }
-    ]);
+    const [searches, setSearches] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [selectedChat, setSelectedChat] = useState({});
     const [open, setOpen] = useState(false);
+    const [searching, setSearching] = useState(false);
 
     const addUser = (e) => {
+
         e.preventDefault();
-        axios.post(
+
+        axios.get(
             WEBSOCKET_ADD_USER_PATH,
-            {username: e.target.username.value}
+            {
+                headers: {
+                    username: e.target.username.value
+                }
+            }
         ).then(res => {
-            localStorage.setItem(USERNAME, res.data.username);
+            localStorage.setItem(USERNAME, res.data.data.username);
             toggleModal();
         }).catch(err => {
             toast.error("Bunday user mavjud")
         })
+    }
+
+    const isSearching = () => {
+        if (searches.length !== 0) {
+            return true;
+
+        } else
+            return false
     }
 
     const toggleModal = () => {
@@ -65,9 +72,61 @@ const Chat = () => {
             WEBSOCKET_GET_CHATS_PATH,
             {headers: {username: localStorage.getItem(USERNAME)}}
         ).then(res => {
-            console.log(res);
-            setChats(res.data)
+            // console.log(res);
+            setChats(res.data.data)
+            // console.log(chats);
+
         })
+    }
+
+    const getMessagesByChatId = (e) => {
+        let path = '';
+        if (e.id)
+            path = '?chatId=' + e.id
+        axios.get(
+            WEBSOCKET_GET_MESSAGES_PATH + path,
+            {headers: {username: e.username}}
+        ).then(res => {
+            setMessages(res.data.data)
+        })
+    }
+
+    const headers = {
+        'username': localStorage.getItem(USERNAME)
+    }
+
+
+    const setChatAndGetMessages = (e) => {
+        setSelectedChat(e);
+        console.log(selectedChat);
+        getMessagesByChatId(e)
+        // setSearching(false)
+    }
+
+    const sendMessage = (e) => {
+        console.log(e);
+        axios.post(WEBSOCKET_SEND_MESSAGE_PATH, {
+            text: e,
+            toUser: selectedChat.username
+        }, {
+            headers: headers
+        })
+            .then(res => {
+                console.log(res);
+                messages.concat(...messages, res.data.data)
+            })
+
+    }
+
+    const searchChats = (e) => {
+        axios.get(
+            WEBSOCKET_SEARCH_USERS_PATH + e.target.value
+        )
+            .then(res => {
+                setSearches(res.data.data)
+                setSearching(true)
+            })
+
     }
 
     useEffect(() => {
@@ -76,6 +135,8 @@ const Chat = () => {
         else {
             getChats()
         }
+
+
     }, [])
     return (<>
         {!localStorage.getItem("username") ?
@@ -101,45 +162,62 @@ const Chat = () => {
                                 onClick={toggleModal}>Close</Button>{' '}
                             <Button
                                 color="success"
+                                onClick={toggleModal}
                                 type={"submit"}>Save</Button>
                         </ModalFooter>
                     </Form>
                 </Modal>
             </>
-
             :
             <Row style={{margin: '50px'}}>
                 <Col md={3}>
                     <Input
+                        onSubmit={searchChats}
                         style={{height: '75px'}}
+                        id={"search"}
+                        name={"search"}
+                        onClick={searchChats}
                         placeholder={"Search chat"}/>
-                    {chats.map(item =>
-                        <Card>
-                            <CardBody
-                                onClick={() => setSelectedChat(item)}
-                                style={{cursor: 'pointer'}}>
-                                <CardTitle>
-                                    <h3>{item.name}
-                                        <Badge style={{marginLeft: '200px'}} color="secondary">
-                                            {item.unread}
-                                        </Badge>
-                                    </h3>
-                                </CardTitle>
+                    {searching ?
+                        searches.map(search =>
+                            <Card>
+                                <CardBody
+                                    onClick={() => setChatAndGetMessages(search)}
+                                    style={{cursor: 'pointer'}}>
+                                    <CardTitle>
+                                        <h3>{search.username}
+                                        </h3>
+                                    </CardTitle>
+                                </CardBody>
+                            </Card>)
+                        : chats.map(item =>
+                            <Card>
+                                <CardBody
+                                    onClick={() => setChatAndGetMessages(item)}
+                                    style={{cursor: 'pointer'}}>
+                                    <CardTitle>
+                                        <h3>{item.username}
+                                            <Badge style={{marginLeft: '200px'}} color="secondary">
+                                                {1}
+                                            </Badge>
+                                        </h3>
+                                    </CardTitle>
 
-                            </CardBody>
-                        </Card>
-                    )}
+                                </CardBody>
+                            </Card>
+                        )}
                 </Col>
                 <Col md={9}>
-                    {selectedChat.id && <Row>
+                    {(selectedChat.id || selectedChat.userId) && <Row>
                         <Card>
                             <CardBody style={{cursor: 'pointer'}}>
                                 <CardTitle>
-                                    <h3>{selectedChat.name}</h3>
+                                    <h3>{selectedChat.username}</h3>
                                 </CardTitle>
                             </CardBody>
                         </Card>
                     </Row>}
+
                     <Row>
                         <Card>
                             <CardBody>
@@ -160,8 +238,15 @@ const Chat = () => {
                             style={{display: 'flex', position: 'absolute'}}>
                             <Input
                                 type={"textarea"}
+                                id={"message"}
+                                onClick={() => sendMessage(document.getElementById("message").value)}                                onSubmit={sendMessage}
                                 style={{width: '80%'}} placeholder={"Enter message text"}/>
-                            <Badge style={{cursor: 'pointer', width: '10%'}} color="secondary">Send</Badge>
+                            <Badge
+                                style={{cursor: 'pointer', width: '10%'}}
+                                color="secondary"
+                                onClick={sendMessage}
+                                onSubmit={sendMessage}
+                            >Send</Badge>
                         </div>
                     </Row>
                 </Col>
