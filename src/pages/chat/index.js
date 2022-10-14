@@ -15,33 +15,24 @@ import {
 } from "reactstrap";
 import {Link} from "react-router-dom";
 import axios from "axios";
-import {WEBSOCKET_ADD_USER_PATH, WEBSOCKET_GET_CHATS_PATH} from "../../utils/api";
+import {
+    WEBSOCKET_ADD_USER_PATH,
+    WEBSOCKET_GET_CHATS_PATH,
+    WEBSOCKET_GET_MESSAGES_PATH,
+    WEBSOCKET_SEARCH_USER_PATH
+} from "../../utils/api";
 import {USERNAME} from "../../utils/RestContants";
 import {toast} from "react-toastify";
+import SockJsClient from 'react-stomp'
 
 const Chat = () => {
     const [chats, setChats] = useState([]);
-    const [messages, setMessages] = useState([
-        {
-            id: '100',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '101',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '102',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }, {
-            id: '103',
-            chatId: 10,
-            text: 'Pulni bering 1000$'
-        }
-    ]);
+    const [messages, setMessages] = useState([]);
     const [selectedChat, setSelectedChat] = useState({});
     const [open, setOpen] = useState(false);
+    const [username, setUsername] = useState('');
+    const [content, setContent] = useState('');
+    const [clientRef, setClientRef] = useState('');
 
     const addUser = (e) => {
         e.preventDefault();
@@ -70,11 +61,52 @@ const Chat = () => {
         })
     }
 
+    const getMessagesByChatId = (chatId) => {
+        axios.get(
+            WEBSOCKET_GET_MESSAGES_PATH + '/' + chatId
+        ).then(res => {
+            console.log(res);
+            setMessages(res.data)
+        })
+    }
+
+    const searchUser = (e) => {
+        axios.post(
+            WEBSOCKET_SEARCH_USER_PATH,
+            {username: e.target.value},
+            {headers: {username}}
+        )
+            .then(res => {
+                console.log(res);
+                setChats([
+                    ...res.data.global,
+                    ...res.data.local]
+                )
+            })
+    }
+
+    const writeMessage = (e) => {
+        setContent(e.target.value)
+    }
+
+    const sendMessage = () => {
+        clientRef.sendMessage('/my-app/send-message', JSON.stringify({
+            username,
+            content,
+            receiverUsername: selectedChat.username
+        }));
+        let obj = {username,
+            content,
+            receiverUsername: selectedChat.username};
+        setMessages([...messages,obj])
+    }
+
     useEffect(() => {
         if (!localStorage.getItem("username"))
-            setOpen(true)
+            setOpen(true);
         else {
-            getChats()
+            getChats();
+            setUsername(localStorage.getItem(USERNAME))
         }
     }, [])
     return (<>
@@ -111,15 +143,19 @@ const Chat = () => {
             <Row style={{margin: '50px'}}>
                 <Col md={3}>
                     <Input
+                        onChange={searchUser}
                         style={{height: '75px'}}
                         placeholder={"Search chat"}/>
                     {chats.map(item =>
                         <Card>
                             <CardBody
-                                onClick={() => setSelectedChat(item)}
+                                onClick={() => {
+                                    setSelectedChat(item);
+                                    getMessagesByChatId(item.chatId);
+                                }}
                                 style={{cursor: 'pointer'}}>
                                 <CardTitle>
-                                    <h3>{item.name}
+                                    <h3>{item.username}
                                         <Badge style={{marginLeft: '200px'}} color="secondary">
                                             {item.unread}
                                         </Badge>
@@ -131,11 +167,11 @@ const Chat = () => {
                     )}
                 </Col>
                 <Col md={9}>
-                    {selectedChat.id && <Row>
+                    {selectedChat.username && <Row>
                         <Card>
                             <CardBody style={{cursor: 'pointer'}}>
                                 <CardTitle>
-                                    <h3>{selectedChat.name}</h3>
+                                    <h3>{selectedChat.username}</h3>
                                 </CardTitle>
                             </CardBody>
                         </Card>
@@ -149,7 +185,7 @@ const Chat = () => {
                                         width: '50%'
                                     }}>
                                         <CardBody>
-                                            {item.text}
+                                            {item.content}
                                         </CardBody>
                                     </Card>)}
                             </CardBody>
@@ -159,14 +195,32 @@ const Chat = () => {
                         <div
                             style={{display: 'flex', position: 'absolute'}}>
                             <Input
+                                onChange={writeMessage}
                                 type={"textarea"}
                                 style={{width: '80%'}} placeholder={"Enter message text"}/>
-                            <Badge style={{cursor: 'pointer', width: '10%'}} color="secondary">Send</Badge>
+                            <Badge
+                                onClick={sendMessage}
+                                style={{cursor: 'pointer', width: '10%'}} color="secondary">Send</Badge>
                         </div>
                     </Row>
                 </Col>
             </Row>
         }
+
+        <SockJsClient url='http://localhost:8080/ketmon-register/'
+                      topics={['/telegram/' + username]}
+                      onConnect={() => {
+                          console.log("connected");
+                      }}
+                      onDisconnect={() => {
+                          console.log("Disconnected");
+                      }}
+                      onMessage={(msg) => {
+                          setMessages([...messages, msg])
+                      }}
+                      ref={(client) => {
+                          setClientRef(client)
+                      }}/>
     </>)
 }
 
