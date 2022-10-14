@@ -2,9 +2,11 @@ import React from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import {Col, Row} from "reactstrap";
 import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../utils/RestContants";
+import sidebarStyle from "./style.css";
 
 const Sidebar = ({children, currentUser}) => {
     let navigate = useNavigate();
+
 
     const logout = () => {
         localStorage.removeItem(ACCESS_TOKEN)
@@ -12,13 +14,18 @@ const Sidebar = ({children, currentUser}) => {
         navigate('/')
     }
     return (
-        <Row style={{"marginTop": "20px"}}>
+        <Row className={"row"} style={{"marginTop": "20px"}}>
             <Col md={3}>
                 <nav>
+                    <div className={"profile"}>
+                        <div className={"img"}></div>
+                        <div className={"name"}>Yusufbek</div>
+                    </div>
                     <ul>
                         {currentUser?.pages?.map(page =>
                             <li>
-                                <Link to={`/${page.toLowerCase()}`}>{page}</Link>
+                                <span></span>
+                                <Link to={`/${page.toLowerCase()}`} className="link">{page}</Link>
                             </li>
                         )}
                         <Link
@@ -28,7 +35,7 @@ const Sidebar = ({children, currentUser}) => {
                 </nav>
             </Col>
 
-            <Col md={9}>
+            <Col md={9} className={"column"}>
                 {children}
             </Col>
         </Row>

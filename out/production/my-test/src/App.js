@@ -9,7 +9,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Promotion from "./pages/promotion";
 import Discount from "./pages/discount";
-import Chat from "./pages/chat";
 
 
 const App = () => {
@@ -41,9 +40,6 @@ const App = () => {
         {
             path: "/discount",
             element: <Discount/>
-        },{
-            path: "/chat",
-            element: <Chat/>
         }
     ]);
 
