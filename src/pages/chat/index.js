@@ -55,14 +55,6 @@ const Chat = () => {
         })
     }
 
-    const isSearching = () => {
-        if (searches.length !== 0) {
-            return true;
-
-        } else
-            return false
-    }
-
     const toggleModal = () => {
         setOpen(!open)
     }
@@ -239,7 +231,8 @@ const Chat = () => {
                             <Input
                                 type={"textarea"}
                                 id={"message"}
-                                onClick={() => sendMessage(document.getElementById("message").value)}                                onSubmit={sendMessage}
+                                onClick={() => sendMessage(document.getElementById("message").value)}
+                                onSubmit={sendMessage}
                                 style={{width: '80%'}} placeholder={"Enter message text"}/>
                             <Badge
                                 style={{cursor: 'pointer', width: '10%'}}
