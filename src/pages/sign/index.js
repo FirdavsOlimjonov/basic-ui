@@ -1,7 +1,10 @@
 import React from "react";
-import SignComponent from "../../components/sign";
 import {ACCESS_TOKEN} from "../../utils/RestContants";
-import {useLocation, Navigate} from "react-router-dom";
+import {useLocation, Navigate, Link} from "react-router-dom";
+import SignComponent from "../../components/sign";
+import SocialLogin from "../../components/socialLogin";
+import './index.css'
+
 
 const SignPage = () => {
     let location = useLocation();
@@ -12,7 +15,18 @@ const SignPage = () => {
             replace/>;
     } else {
         return (
-            <SignComponent/>
+            <>
+                <div className="login-container">
+                    <div className="login-content">
+                        <h1 className="login-title">Login to SpringSocial</h1>
+                        <SocialLogin />
+                        <div className="or-separator">
+                            <span className="or-text">OR</span>
+                        </div>
+                        <SignComponent/>
+                    </div>
+                </div>
+            </>
         );
     }
 }

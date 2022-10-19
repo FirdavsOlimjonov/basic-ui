@@ -1,15 +1,14 @@
 import React, {useState} from 'react';
-import {Col, Row} from "reactstrap";
 import axios from "axios";
 import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../utils/RestContants";
 import {useNavigate} from "react-router-dom";
 import {SIGN_IN_PATH} from "../../utils/api";
+import '../../pages/sign/index.css'
 
 const SignComponent = () => {
     const [phoneNumber, setPhoneNumber] = useState('+998');
     const [password, setPassword] = useState();
 
-    const setPhone = (e) => setPhoneNumber(e.target.value);
     const setPass = (e) => setPassword(e.target.value);
     const navigate = useNavigate();
 
@@ -33,37 +32,31 @@ const SignComponent = () => {
             ).catch(err => console.log(err))
     }
     return (
-        <Row>
-            <Col md={8}>
-                <img src="src/assets/images/SignIn.png" alt=""/>
-            </Col>
-            <Col md={4}>
-                <h4>Please login</h4>
+        <>
+            <div className="form-item">
+                <input type="email"
+                       name="email"
+                       placeholder="Enter phone number"
+                       onChange={(e) => setPhoneNumber(e.target.value)}
+                       className="form-control"
+                       value={phoneNumber}
+                       required/>
+            </div>
+            <div className="form-item">
                 <input
-                    id="phoneNumber"
-                    type="text"
-                    onChange={setPhone}
-                    placeholder="Enter phone number"
-                    name="phoneNumber"
-                    required={true}
-                />
-                <br/>
-                <input
-                    id="password"
                     type="password"
-                    onChange={setPass}
-                    placeholder="Enter password"
                     name="password"
-                    required={true}
-                />
-                <br/>
+                    className="form-control" placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)} required/>
+            </div>
+            <div className="form-item">
                 <button
                     onClick={signIn}
-                    type={"button"}>Sign In
+                    className="btn btn-block btn-primary">Login
                 </button>
-            </Col>
-
-        </Row>
+            </div>
+        </>
     );
 }
 

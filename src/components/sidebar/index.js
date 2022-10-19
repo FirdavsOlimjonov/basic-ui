@@ -21,6 +21,7 @@ const Sidebar = ({children, currentUser}) => {
                         <div className={"img"}></div>
                         <div className={"name"}>Yusufbek</div>
                     </div>
+                    <Link to="/cabinet" className="link">Cabinet</Link>
                     <ul>
                         {currentUser?.pages?.map(page =>
                             <li>
